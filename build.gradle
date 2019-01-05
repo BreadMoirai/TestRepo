@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'com.github.breadmoirai.github-release' version '2.2.3'
+}
+
+group = 'com.github.breadmoirai'
+version = '0-SNAPSHOT'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+githubRelease {
+    authorization Base64.encoder.encodeToString("Basic ${project.property('github.username')}:${project.property('github.password')}".bytes)
+    body 'Test'
+}
+
