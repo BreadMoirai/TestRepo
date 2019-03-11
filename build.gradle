@@ -1,3 +1,5 @@
+import java.util.stream.Collectors
+
 buildscript {
     repositories {
         jcenter()
@@ -7,11 +9,11 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'com.github.breadmoirai.github-release' version '2.2.3'
+    id 'com.github.breadmoirai.github-release' version '2.3.0'
 }
 
 group = 'com.github.breadmoirai'
-version = '0-SNAPSHOT'
+version = '0.0-SNAPSHOT'
 
 repositories {
     jcenter()
@@ -23,7 +25,50 @@ dependencies {
 }
 
 githubRelease {
-    authorization Base64.encoder.encodeToString("Basic ${project.property('github.username')}:${project.property('github.password')}".bytes)
-    body 'Test'
+    authorization "Basic ${Base64.encoder.encodeToString("${project.property('github.username')}:${project.property('github.password')}".bytes)}"
+    body {
+        """${
+            changelog().call().readLines().stream().peek { println(it) }.map {
+                "- $it"
+            }.collect(Collectors.joining('\n', '## Changelog\n', ''))
+        }
+        \n ${changelog().call()}"""
+    }
+    overwrite true
+}
+
+gradle.taskGraph.whenReady { graph ->
+    graph.allTasks.find {
+        it.name == 'githubRelease'
+    }.with {
+//        setOverwrite provider({ ->
+//            def result = false
+//            if (new Exception().stackTrace.any { it.className.contains('breadmoirai') }) {
+//                new groovy.swing.SwingBuilder().edt {
+//                    dialog(modal: true,
+//                            title: 'Overwrite Existing',
+//                            alwaysOnTop: true,
+//                            resizable: false,
+//                            locationRelativeTo: null,
+//                            pack: true,
+//                            show: true
+//                    ) {
+//                        vbox {
+//                            label(text: 'An existing Github release has been found. Would you like to delete it?')
+//                            button(defaultButton: true, text: 'Yes', actionPerformed: {
+//                                result = true
+//                                dispose()
+//                            })
+//                            button(text: 'No', actionPerformed: {
+//                                result = false
+//                                dispose()
+//                            })
+//                        }
+//                    }
+//                }
+//            }
+//            return result
+//        })
+    }
 }
 
