@@ -9,15 +9,16 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'com.github.breadmoirai.github-release' version '2.3.0'
+    id 'com.github.breadmoirai.github-release' version '2.2.11-a'
 }
 
 group = 'com.github.breadmoirai'
-version = '0.0-SNAPSHOT'
+version = 'testing_uploads'
 
 repositories {
     jcenter()
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -25,15 +26,12 @@ dependencies {
 }
 
 githubRelease {
-    authorization "Basic ${Base64.encoder.encodeToString("${project.property('github.username')}:${project.property('github.password')}".bytes)}"
-    body {
-        """${
-            changelog().call().readLines().stream().peek { println(it) }.map {
-                "- $it"
-            }.collect(Collectors.joining('\n', '## Changelog\n', ''))
-        }
-        \n ${changelog().call()}"""
-    }
+    token project.property('github.token')
+    tagName version
+    releaseName version
+    dryRun true
+    body changelog()
+    releaseAssets file("test.txt")
     overwrite true
 }
 
