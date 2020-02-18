@@ -13,7 +13,7 @@ plugins {
 }
 
 group = 'com.github.breadmoirai'
-version = 'testing_uploads'
+version = '2.0'
 
 repositories {
     jcenter()
