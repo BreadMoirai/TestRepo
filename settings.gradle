@@ -1,10 +1,10 @@
-pluginManagement {
-    repositories {
-        maven {
-            url file('C:/Users/TonTL/.m2/repository/')
-        }
-    }
-}
+//pluginManagement {
+//    repositories {
+//        maven {
+//            url file('C:/Users/TonTL/.m2/repository/')
+//        }
+//    }
+//}
 
 rootProject.name = 'TestRepo'
 

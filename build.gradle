@@ -1,23 +1,26 @@
-import java.util.stream.Collectors
-
 buildscript {
     repositories {
-        jcenter()
+        mavenLocal()
+
+        dependencies {
+            classpath 'com.github.breadmoirai:github-release:2.3.0'
+        }
     }
 }
 
 plugins {
     id 'java'
     id 'idea'
-    id 'com.github.breadmoirai.github-release' version '2.3.0'
 }
 
+apply plugin: 'com.github.breadmoirai.github-release'
+
 group = 'com.github.breadmoirai'
-version = '0.0-SNAPSHOT'
+version = '0.1-SNAPSHOT'
 
 repositories {
-    jcenter()
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -25,22 +28,37 @@ dependencies {
 }
 
 githubRelease {
+//    def ii = {
+//        """${
+//            changelog {
+//                executable {
+//                    "C:\\Users\\TonTL\\AppData\\Local\\GitHub\\PortableGit_69bd5e6f85e4842f07db71c9618a621154c52254\\bin\\git.exe"
+//                }
+//            }.call().readLines().stream().map {
+//                "- $it"
+//            }.collect(Collectors.joining('\n', '## Changelog\n', ''))
+//        }
+//        """
+//    }.memoize()
     authorization "Basic ${Base64.encoder.encodeToString("${project.property('github.username')}:${project.property('github.password')}".bytes)}"
-    body {
-        """${
-            changelog().call().readLines().stream().peek { println(it) }.map {
-                "- $it"
-            }.collect(Collectors.joining('\n', '## Changelog\n', ''))
-        }
-        \n ${changelog().call()}"""
-    }
+    body { """
+# Makeing a reElease
+
+what this is just a test? new test
+
+## Changellog
+* nothin
+""" }
     overwrite true
+    releaseAssets files("test1.txt", "test2.txt")
+    draft = false
 }
 
 gradle.taskGraph.whenReady { graph ->
-    graph.allTasks.find {
-        it.name == 'githubRelease'
-    }.with {
+    graph.beforeTask { task ->
+        if (task.name == "githubRelease") {
+            task.releaseAssets = files("test3.txt")
+        }
 //        setOverwrite provider({ ->
 //            def result = false
 //            if (new Exception().stackTrace.any { it.className.contains('breadmoirai') }) {
